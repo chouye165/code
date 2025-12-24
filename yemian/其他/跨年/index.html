@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合集</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        header {
+            padding: 10px;
+            background-color: rgb(33 150 243 / 1);
+            color: white;
+            margin-bottom: 20px;
+            box-shadow: 4px 4px 14px #ccc;
+        }
+
+        .home {
+            color: white;
+            cursor: pointer;
+            padding: 0 10px;
+        }
+        
+        .container {
+            min-width: 95vw;
+            background-color: white;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px 40px;
+            gap: 30px;
+        }
+
+        .page {
+            flex: 1;
+            min-width: 300px;
+            margin-bottom: 20px;
+        }
+        
+        .page iframe {
+            width: 100%;
+            min-height: 400px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .page .info {
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .new-page-btn {
+            display: flex;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .new-page-btn span {
+            display: flex;
+            align-items: center;
+            background: #f3f3f3;
+            padding: 10px 15px;
+            color: #222;
+            font-weight: bold;
+        }
+
+        .new-page-btn a {
+            display: flex;
+            align-items: center;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 16px;
+            background-color: rgb(33 150 243 / 1);
+            border-radius: 0 8px 8px 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .new-page-btn a:hover {
+            background-color: rgb(33 150 243 / 80%);
+        }
+
+        li {
+            list-style: decimal;
+            margin-left: 18px;
+            margin-bottom: 8px;
+        }
+
+        .introduction {
+            line-height: 1.7;
+            font-size: 15px;
+            letter-spacing: 0.8px;
+        }
+
+        .text-stress {
+            color: red;
+            font-weight: bold;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                min-width: 98vw;
+                margin: 10px;
+            }
+            
+            .content {
+                padding: 15px;
+                gap: 20px;
+            }
+            
+            .page {
+                min-width: 100%;
+            }
+            
+            .page iframe {
+                min-height: 350px;
+            }
+            
+            .new-page-btn span {
+                font-size: 14px;
+                padding: 8px 12px;
+            }
+            
+            .new-page-btn a {
+                font-size: 14px;
+                padding: 8px 15px;
+            }
+            
+            .introduction {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page iframe {
+                min-height: 300px;
+            }
+            
+            .introduction {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header><a class="home" href="../">首页</a></header>
+        <div class="content">
+            <div class="page">
+                <iframe src="yemian/1.html"></iframe>
+                <div class="info">  
+                    <div class="new-page-btn">
+                        <span>倒计时</span>
+                        <a href="yemian/1.html" target="_blank">新页面打开</a>
+                    </div>
+                    <div class="introduction">
+                        ---
+                        <ul>
+                            <li> 跨年倒计时  </li>
+                            
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="page">
+                <iframe src="yemian/2.html"></iframe>
+                <div class="info">  
+                    <div class="new-page-btn">
+                        <span>新年快乐</span>
+                        <a href="yemian/2.html" target="_blank">新页面打开</a>
+                    </div>
+                    <div class="introduction">
+                        ---
+                        <ul>
+                            <li> 新年快乐 </li>
+                           
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载完成后确保iframe正常加载
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('请假申请展示页面已加载');
+            
+            // 为新页面打开按钮添加更好的交互体验
+            const newPageButtons = document.querySelectorAll('.new-page-btn a');
+            newPageButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    console.log('在新页面打开版本：', this.href);
+                });
+            });
+
+            // 处理iframe加载错误的情况
+            const iframes = document.querySelectorAll('iframe');
+            iframes.forEach(iframe => {
+                iframe.addEventListener('error', function() {
+                    console.error('iframe加载失败:', this.src);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>爱心代码</title>
+    <meta name="keywords" content="爱心代码,爱心">
+    <meta name="description" content="这可是同款爱心代码~">
+    <link rel="shortcut icon" href="https://www.xfabe.com/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 可选：添加提示文字，告诉用户点击屏幕播放音乐 */
+        .click-tip {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 8px 16px;
+            border-radius: 20px;
+            z-index: 999;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 可选：添加点击提示 -->
+    <div class="click-tip">点击屏幕播放音乐 ❤️</div>
+    <p class="love_you">爱你的心</p>
+    <!-- 1. 移除autoplay属性，添加id方便JS获取 -->
+    <audio id="audioPlayer" src="lovexf.mp3" loop controls></audio>
+    <canvas id="lovexf"></canvas>
+    <script src="script.js"></script>
+    <script src="https://player.xfyun.club/love-wuminjun/love.click.js"></script>
+
+    <script>
+        // 2. 获取音频元素和提示文字元素
+        const audio = document.getElementById('audioPlayer');
+        const clickTip = document.querySelector('.click-tip');
+
+        // 3. 定义播放音频的函数
+        function playAudio() {
+            // 播放音频（返回Promise）
+            audio.play().then(() => {
+                console.log('音乐开始播放~');
+                // 播放成功后，隐藏提示文字
+                clickTip.style.display = 'none';
+                // 移除点击监听（避免重复触发）
+                document.removeEventListener('click', playAudio);
+                document.removeEventListener('touchstart', playAudio); // 兼容移动端
+            }).catch(err => {
+                console.log('播放失败：', err);
+                alert('音乐播放失败，请检查音频文件路径或浏览器权限~');
+            });
+        }
+
+        // 4. 监听页面的点击事件（PC端）
+        document.addEventListener('click', playAudio);
+        // 5. 监听页面的触摸事件（移动端，提升体验）
+        document.addEventListener('touchstart', playAudio, { passive: true });
+    </script>
+</body>
+
+</html>

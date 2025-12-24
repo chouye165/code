@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>代码展示</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.544.0/dist/umd/lucide.min.js"></script>
+    <style>
+        .code-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .code-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        xmp {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900">
+    <div class="container mx-auto px-4 py-8">
+        <!-- 搜索框 -->
+        <div class="mb-8">
+            <div class="relative max-w-2xl mx-auto">
+                <input type="text" id="search-input" placeholder="搜索项目名称或描述..." 
+                       class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400">
+                <button id="search-btn" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                    <i data-lucide="search" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div id="code-cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+        
+        <!-- 查看更多按钮 -->
+        <div class="text-center mt-8" id="load-more-container">
+            <button id="load-more-btn" class="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors shadow-md hidden">
+                <i data-lucide="plus-circle" class="w-5 h-5 mr-2 inline-block"></i>查看更多
+            </button>
+        </div>
+    </div>
+
+    <div id="code-detail-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">项目 1 代码</h2>
+                <button id="close-modal" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div class="relative">
+                <div class="bg-black text-green-400 p-4 rounded-md overflow-x-auto font-mono text-sm"><xmp id="code-preview"></xmp></div>
+                <button id="copy-code-btn" class="absolute top-2 right-2 bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 transition-colors">
+                    <i data-lucide="copy" class="w-4 h-4 inline-block mr-1"></i> 复制
+                </button>
+            </div>
+            <div class="mt-6 flex justify-end">
+                <a id="download-code-btn" href="#" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
+                    <i data-lucide="download" class="w-4 h-4 mr-2"></i> 下载代码
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed bottom-8 right-8">
+        <button id="share-btn" class="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-colors">
+            <i data-lucide="share-2" class="w-6 h-6"></i>
+        </button>
+    </div>
+
+    <div id="share-toast" class="hidden fixed inset-0 flex items-center justify-center z-50">
+        <div class="bg-gray-800 text-white px-6 py-3 rounded-md shadow-lg">
+            链接复制成功，快去分享吧！
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 text-center">
+        <a href="https://wwaui.lanzoue.com/b00b59ba3g" target="_blank" class="inline-flex items-center px-6 py-3 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors shadow-lg">
+            <i data-lucide="cloud" class="w-5 h-5 mr-2"></i>
+            前往网盘下载完整代码<br>密码：5252
+        </a>
+    </div>
+
+    <!-- 添加版权信息和说明 -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4">
+            <div class="text-center">
+                <p class="mb-2">© 2025 chouye 版权所有</p>
+                <p class="text-sm text-gray-400">有问题联系管理 邮箱：xiao@chouye.dpdns.org</p>
+                <p class="text-sm text-gray-400 mt-1">如有侵权请联系我们删除</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const codeItems = [
+            {
+                name: "蒸蚌",
+                description: "蒸蚌小猫",
+                filePath: "codedaima/无代码.txt",
+                links: [
+                    { name: "查看代码", url: "#" },
+                    { name: "演示", url: "yemian/xiaomao/index.html" }
+                ]
+            },
+            {
+                name: "ae圣诞树",
+                description: "这是ae制作的视频网页-下载编号：01",
+                filePath: "codedaima/无代码.txt",
+                links: [
+                    { name: "查看代码", url: "#" },
+                    { name: "演示", url: "yemian/圣诞树/银色ae圣诞树/index.html" }
+                ]
+            },
+            {
+                name: "圣诞树2",
+                description: "蓝色圣诞树，手机显示更佳-下载编号：02",
+                filePath: "codedaima/无代码.txt",
+                links: [
+                    { name: "查看代码", url: "#" },
+                    { name: "演示", url: "yemian/圣诞树/圣诞树1/index.html" }
+                ]
+            },
+            {
+                name: "爱心",
+                description: "这是爱心窗口代码",
+                filePath: "codedaima/爱心.html",
+                links: [
+                    { name: "查看代码", url: "#" },
+                    { name: "演示", url: "yemian/爱心/zixhiaixin/index.html" }
+                ]
+            },
+            {
+                name: "圣诞礼物",
+                description: "礼物圣诞树-下载编号：03",
+                filePath: "codedaima/无代码.txt",
+                links: [
+                    { name: "查看代码", url: "#" },
+                    { name: "演示", url: "yemian/圣诞树/圣诞树2/index.html" }
+                ]
+            },
+            {
+                name: "跳动爱心",
+                description: "跳动的爱心文字网页代码",
+                filePath: "codedaima/跳动爱心文字.html",
+                links: [
+                    { name: "查看代码", url: "#" },
+                    { name: "演示", url: "yemian/爱心/tiaodong/index.html" }
+                ]
+            },
+            {
+                name: "名字爱心",
+                description: "名字爱心网页代码-下载编号：04",
+                filePath: "codedaima/无代码.txt",
+                links: [
+                    { name: "查看代码", url: "#" },
+                    { name: "演示", url: "yemian/爱心/mingzi/index.html" }
+                ]
+            },
+            {
+                name: "小人发射爱心",
+                description: "小人发射爱心网页代码-下载编号：05",
+                filePath: "codedaima/无代码.txt",
+                links: [
+                    { name: "查看代码", url: "#" },
+                    { name: "演示", url: "yemian/爱心/biu/index.html" }
+                ]
+            },
+            {
+                name: "烟花",
+                description: "放烟花网页-下载编号：06",
+                filePath: "codedaima/无代码.txt",
+                links: [
+                    { name: "查看代码", url: "#" },
+                    { name: "演示", url: "yemian/其他/烟花/index.html" }
+                ]
+            },
+            {
+                name: "请假",
+                description: "导员请假网页代码",
+                filePath: "codedaima/导员请假.html",
+                links: [
+                    { name: "查看代码", url: "#" },
+                    { name: "演示", url: "yemian/其他/请假/index.html" }
+                ]
+            },
+            {
+                name: "跨年",
+                description: "跨年倒计时网页代码合集",
+                filePath: "codedaima/新年快乐.html",
+                links: [
+                    { name: "查看代码", url: "#" },
+                    { name: "演示", url: "yemian/其他/跨年/index.html" }
+                ]
+            }
+        ];
+
+        const codeCardsContainer = document.getElementById("code-cards");
+        const codeDetailModal = document.getElementById("code-detail-modal");
+        const closeModalBtn = document.getElementById("close-modal");
+        const copyCodeBtn = document.getElementById("copy-code-btn");
+        const downloadCodeBtn = document.getElementById("download-code-btn");
+        const codePreview = document.getElementById("code-preview");
+        const loadMoreBtn = document.getElementById("load-more-btn");
+        const loadMoreContainer = document.getElementById("load-more-container");
+        const searchInput = document.getElementById("search-input");
+        const searchBtn = document.getElementById("search-btn");
+
+        const shareBtn = document.getElementById("share-btn");
+        const shareToast = document.getElementById("share-toast");
+
+        let currentFilePath = '';
+        const visibleCount = 5; // 初始显示数量
+        let isShowingAll = false; // 是否显示全部
+        let searchQuery = ''; // 当前搜索关键词
+
+        // 创建代码卡片
+        function renderCodeCards(showAll = false, searchTerm = '') {
+            codeCardsContainer.innerHTML = ''; // 清空容器
+            
+            // 根据搜索词过滤项目
+            let filteredItems = codeItems;
+            if (searchTerm) {
+                const term = searchTerm.toLowerCase();
+                filteredItems = codeItems.filter(item => 
+                    item.name.toLowerCase().includes(term) || 
+                    item.description.toLowerCase().includes(term)
+                );
+            }
+            
+            // 根据显示状态决定显示数量
+            const itemsToShow = showAll ? filteredItems : filteredItems.slice(0, visibleCount);
+            
+            if (itemsToShow.length === 0) {
+                // 如果没有匹配的项目，显示提示信息
+                const emptyState = document.createElement("div");
+                emptyState.className = "col-span-full text-center py-12";
+                emptyState.innerHTML = `
+                    <i data-lucide="search" class="w-16 h-16 mx-auto text-gray-400 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">未找到相关项目</h3>
+                    <p class="text-gray-500 dark:text-gray-400">尝试使用其他关键词搜索，或者清除搜索条件</p>
+                    <button id="clear-search" class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                        清除搜索
+                    </button>
+                `;
+                codeCardsContainer.appendChild(emptyState);
+                
+                // 添加清除搜索按钮事件
+                document.getElementById('clear-search')?.addEventListener('click', () => {
+                    searchInput.value = '';
+                    searchQuery = '';
+                    renderCodeCards(isShowingAll, '');
+                    lucide.createIcons();
+                });
+            } else {
+                itemsToShow.forEach((item) => {
+                    const card = document.createElement("div");
+                    card.className = "code-card bg-white dark:bg-gray-800 rounded-lg shadow-md p-6";
+
+                    const nameElement = document.createElement("h2");
+                    nameElement.className = "text-2xl font-bold mb-2 text-gray-900 dark:text-white";
+                    nameElement.textContent = item.name;
+
+                    const descriptionElement = document.createElement("p");
+                    descriptionElement.className = "text-gray-600 dark:text-gray-400 mb-4";
+                    descriptionElement.textContent = item.description;
+
+                    const linksContainer = document.createElement("div");
+                    linksContainer.className = "flex space-x-4";
+
+                    item.links.forEach(link => {
+                        const linkElement = document.createElement("a");
+                        linkElement.href = link.url;
+                        linkElement.className = "inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors";
+                        linkElement.target = "_blank";
+                        linkElement.rel = "noopener noreferrer";
+
+                        if (link.name === "查看代码") {
+                            linkElement.href = "#";
+                            linkElement.addEventListener("click", (e) => {
+                                e.preventDefault();
+                                const modalTitle = codeDetailModal.querySelector("h2");
+                                modalTitle.textContent = item.name + " 代码";
+                                currentFilePath = item.filePath;
+                                fetch(item.filePath)
+                                    .then(response => {
+                                        if (!response.ok) {
+                                            throw new Error(`Network response was not ok: ${response.status}`);
+                                        }
+                                        return response.text();
+                                    })
+                                    .then(text => {
+                                        codePreview.textContent = text;
+                                    })
+                                    .catch(error => {
+                                        console.error('There has been a problem with your fetch operation:', error);
+                                        codePreview.textContent = "无法加载文件内容: " + error.message;
+                                    });
+                                codeDetailModal.classList.remove("hidden");
+                            });
+                        }
+
+                        const icon = document.createElement("i");
+                        icon.className = link.name === "查看代码" ? "lucide-code mr-2" : "lucide-external-link mr-2";
+                        linkElement.appendChild(icon);
+                        linkElement.appendChild(document.createTextNode(link.name));
+
+                        linksContainer.appendChild(linkElement);
+                    });
+
+                    card.appendChild(nameElement);
+                    card.appendChild(descriptionElement);
+                    card.appendChild(linksContainer);
+
+                    codeCardsContainer.appendChild(card);
+                });
+            }
+
+            // 控制"查看更多"按钮显示
+            if (filteredItems.length > visibleCount && !searchTerm) {
+                loadMoreBtn.classList.remove("hidden");
+                loadMoreBtn.innerHTML = showAll 
+                    ? '<i data-lucide="minus-circle" class="w-5 h-5 mr-2 inline-block"></i>收起'
+                    : '<i data-lucide="plus-circle" class="w-5 h-5 mr-2 inline-block"></i>查看更多';
+            } else {
+                loadMoreBtn.classList.add("hidden");
+            }
+        }
+
+        // 初始渲染
+        renderCodeCards();
+
+        // 搜索功能
+        function performSearch() {
+            searchQuery = searchInput.value.trim();
+            isShowingAll = false; // 搜索时重置显示状态
+            renderCodeCards(false, searchQuery);
+            lucide.createIcons();
+        }
+
+        searchBtn.addEventListener("click", performSearch);
+
+        searchInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") {
+                performSearch();
+            }
+        });
+
+        // 实时搜索（可选）
+        searchInput.addEventListener("input", () => {
+            const query = searchInput.value.trim();
+            if (query === '') {
+                searchQuery = '';
+                renderCodeCards(isShowingAll, '');
+                lucide.createIcons();
+            }
+        });
+
+        // 查看更多/收起按钮事件
+        loadMoreBtn.addEventListener("click", () => {
+            isShowingAll = !isShowingAll;
+            renderCodeCards(isShowingAll, searchQuery);
+            lucide.createIcons();
+        });
+
+        closeModalBtn.addEventListener("click", () => {
+            codeDetailModal.classList.add("hidden");
+        });
+
+        codeDetailModal.addEventListener("click", (e) => {
+            if (e.target === codeDetailModal) {
+                codeDetailModal.classList.add("hidden");
+            }
+        });
+
+        copyCodeBtn.addEventListener("click", () => {
+            navigator.clipboard.writeText(codePreview.textContent).then(() => {
+                const originalText = copyCodeBtn.innerHTML;
+                copyCodeBtn.innerHTML = '<i data-lucide="check" class="w-4 h-4 inline-block mr-1"></i> 已复制';
+                setTimeout(() => {
+                    copyCodeBtn.innerHTML = originalText;
+                }, 2000);
+            });
+        });
+
+        downloadCodeBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            const content = codePreview.textContent;
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const originalFileName = currentFilePath.split('/').pop();
+            a.download = originalFileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        shareBtn.addEventListener("click", () => {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                shareToast.classList.remove("hidden");
+                setTimeout(() => {
+                    shareToast.classList.add("hidden");
+                }, 3000);
+            });
+        });
+
+        lucide.createIcons();
+    </script>
+
+</body>
+</html>

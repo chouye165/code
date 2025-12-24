@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="language" content="zh-CN">
+    <!-- 新增视口适配，优化移动端体验 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/love.css">
+    <style>
+        /* 可选：添加点击提示，引导用户操作 */
+        .play-tip {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ff6b8b;
+            font-size: 18px;
+            text-align: center;
+            z-index: 9999;
+            pointer-events: none; /* 不遮挡点击事件 */
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 1. 修复autoplay拼写错误，移除autoplay（改用JS触发），保留loop/preload -->
+    <audio id="audios" loop="loop" preload="auto">
+        <source src="MP3/1.mp3" type="audio/mpeg" />
+        <!-- 新增OGG格式，兼容更多浏览器 -->
+        <source src="MP3/1.ogg" type="audio/ogg" />
+        您的浏览器不支持音频播放，请更换浏览器重试~
+    </audio>
+
+    <!-- 可选：点击提示文字 -->
+    <div class="play-tip">  </div>
+
+    <div class="container" onselectstart="return false;" unselectable="on" style="-moz-user-select:none;">
+        <div class="body_left">
+            <img src="images/biubiubiu.gif" alt="" ondragstart='return false;'>
+        </div>
+        <div class="body_center love">
+            <div class="block">
+                <div class="div1"></div>
+                <div class="div2"></div>
+                <div class="div3"></div>
+                <div class="div4"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="border">
+            <div class="border-top"></div>
+            <div class="border-bottom"></div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="js/love.js"></script>
+
+    <script>
+        // 2. 获取音频元素和提示元素
+        const audio = document.getElementById('audios');
+        const playTip = document.querySelector('.play-tip');
+
+        // 3. 定义播放函数，触发后移除监听避免重复执行
+        function playMusic() {
+            audio.play()
+                .then(() => {
+                    console.log('音乐播放成功~');
+                    playTip.style.display = 'none'; // 隐藏提示
+                    // 移除点击/触摸监听
+                    document.removeEventListener('click', playMusic);
+                    document.removeEventListener('touchstart', playMusic);
+                })
+                .catch(err => {
+                    console.error('音乐播放失败：', err);
+                    alert('音乐播放失败，请检查音频文件路径或浏览器权限~');
+                });
+        }
+
+        // 4. 监听PC端点击事件
+        document.addEventListener('click', playMusic);
+        // 5. 监听移动端触摸事件（passive: true 提升性能）
+        document.addEventListener('touchstart', playMusic, { passive: true });
+    </script>
+</body>
+</html>

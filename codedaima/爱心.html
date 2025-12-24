@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>温馨提示爱心阵</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", 微软雅黑, sans-serif;
+            overflow: hidden;
+            background-color: #f5f5f5;
+        }
+
+        /* 提示窗口样式 */
+        .tip-window {
+            position: absolute;
+            width: 250px;
+            height: 60px;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 16px;
+            z-index: 9999;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            white-space: normal;
+            word-wrap: break-word;
+        }
+
+        /* 启动按钮容器：居中显示 */
+        .start-btn-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10000;
+            transition: all 0.3s ease;
+        }
+
+        /* 启动按钮样式 */
+        #startBtn {
+            padding: 15px 40px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+
+        #startBtn:hover {
+            background-color: #45a049;
+        }
+
+        #startBtn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        /* 清除按钮样式：固定在右上角 */
+        #clearBtn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            padding: 10px 20px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            display: none; /* 默认隐藏 */
+            transition: background-color 0.3s ease;
+        }
+
+        #clearBtn:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <!-- 启动按钮容器（居中） -->
+    <div class="start-btn-container" id="startBtnContainer">
+        <button id="startBtn" onclick="startTips()">启动</button>
+    </div>
+
+    <!-- 清除按钮（默认隐藏，右上角） -->
+    <button id="clearBtn" onclick="clearAllTips()">清除</button>
+
+    <script>
+        // 配置参数（固定窗口数量为100）
+        const CONFIG = {
+            window_count: 100, // 固定使用100个窗口
+            window_width: 250,
+            window_height: 60,
+            display_time: 30000, // 毫秒
+            start_delay: 50, // 毫秒（原0.05秒=50毫秒）
+            heart_scale: 0.4,
+        };
+
+        // 温馨提示列表
+        const TIPS = [
+            "多喝水哦~，保持微笑呀", "每天都要元气满满", "记得吃水果",
+            "保持好心情", "好好爱自己", "我想你了", "梦想成真",
+            "期待下一次见面", "金榜题名", "顺顺利利", "早点休息",
+            "愿所有烦恼都消失", "别熬夜", "今天过得开心嘛",
+            "天冷了，多穿衣服"
+        ];
+
+        // 背景颜色列表
+        const BG_COLORS = [
+            "lightpink", "skyblue", "lightgreen", "lavender", "lightyellow",
+            "plum", "coral", "bisque", "aquamarine", "mistyrose",
+            "honeydew", "lavenderblush", "oldlace"
+        ];
+
+        // 全局变量
+        let windowIndexCounter = 0;
+        let windowCountForHeart = 0;
+        let tipElements = []; // 存储所有提示窗口元素，用于批量清除
+        let startBtn = null;
+        let clearBtn = null;
+        let startBtnContainer = null;
+        let allTipsCreated = false; // 标记是否所有窗口都已创建完成
+
+        // 初始化元素引用
+        window.onload = function() {
+            startBtn = document.getElementById('startBtn');
+            clearBtn = document.getElementById('clearBtn');
+            startBtnContainer = document.getElementById('startBtnContainer');
+        };
+
+        /**
+         * 生成爱心坐标（与Python逻辑一致）
+         * @param {number} index - 当前窗口索引
+         * @param {number} total - 总窗口数
+         * @returns {Object} x, y 坐标
+         */
+        function getHeartCoordinates(index, total) {
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            const windowWidth = CONFIG.window_width;
+            const windowHeight = CONFIG.window_height;
+
+            // 爱心曲线参数方程
+            const t = 2 * Math.PI * index / total;
+            const x = 16 * Math.pow(Math.sin(t), 3);
+            const y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+
+            // 缩放和居中处理
+            const scaleFactor = Math.min(screenWidth, screenHeight) * CONFIG.heart_scale / 16;
+            const centerX = screenWidth / 2 - windowWidth / 2;
+            const centerY = screenHeight / 2 - windowHeight / 2;
+
+            // 计算最终坐标（反转y轴，因为屏幕坐标y轴向下）
+            let finalX = centerX + x * scaleFactor;
+            let finalY = centerY - y * scaleFactor;
+
+            // 随机小偏移
+            const jitterX = Math.random() * 10 - 5;
+            const jitterY = Math.random() * 10 - 5;
+            finalX += jitterX;
+            finalY += jitterY;
+
+            // 确保坐标在屏幕范围内
+            finalX = Math.max(0, Math.min(finalX, screenWidth - windowWidth));
+            finalY = Math.max(0, Math.min(finalY, screenHeight - windowHeight));
+
+            return { x: finalX, y: finalY };
+        }
+
+        /**
+         * 创建单个提示窗口
+         */
+        function showWarmTip() {
+            try {
+                // 获取坐标
+                const coords = getHeartCoordinates(windowIndexCounter, windowCountForHeart);
+                windowIndexCounter++;
+
+                // 随机选择提示和背景色
+                const tip = TIPS[Math.floor(Math.random() * TIPS.length)];
+                const bg = BG_COLORS[Math.floor(Math.random() * BG_COLORS.length)];
+
+                // 创建窗口元素
+                const windowElement = document.createElement('div');
+                windowElement.className = 'tip-window';
+                windowElement.style.left = `${coords.x}px`;
+                windowElement.style.top = `${coords.y}px`;
+                windowElement.style.backgroundColor = bg;
+                windowElement.textContent = tip;
+
+                // 添加到页面和存储数组
+                document.body.appendChild(windowElement);
+                tipElements.push(windowElement);
+
+                // 30秒后移除窗口（渐变消失效果）
+                setTimeout(() => {
+                    if (windowElement.parentNode) {
+                        windowElement.style.opacity = 0;
+                        setTimeout(() => {
+                            if (windowElement.parentNode) {
+                                document.body.removeChild(windowElement);
+                            }
+                            // 从数组中移除
+                            tipElements = tipElements.filter(el => el !== windowElement);
+                        }, 300);
+                    }
+                }, CONFIG.display_time);
+
+                // 检查是否所有窗口都已创建完成
+                if (windowIndexCounter >= CONFIG.window_count) {
+                    allTipsCreated = true;
+                    clearBtn.style.display = 'block'; // 显示清除按钮
+                }
+
+            } catch (e) {
+                console.error('创建窗口时出错：', e);
+            }
+        }
+
+        /**
+         * 启动提示窗口（固定使用100个窗口）
+         */
+        function startTips() {
+            // 初始化状态
+            windowIndexCounter = 0;
+            windowCountForHeart = CONFIG.window_count;
+            tipElements = [];
+            allTipsCreated = false;
+            clearBtn.style.display = 'none'; // 隐藏清除按钮
+
+            // 禁用启动按钮
+            startBtn.disabled = true;
+            // 隐藏启动按钮容器（视觉上更清爽）
+            startBtnContainer.style.opacity = 0;
+
+            // 计算总延迟时间（所有窗口创建完成的时间）
+            const totalDelay = CONFIG.window_count * CONFIG.start_delay;
+
+            // 依次创建100个窗口（延迟启动）
+            let delay = 0;
+            for (let i = 0; i < CONFIG.window_count; i++) {
+                setTimeout(() => {
+                    showWarmTip();
+                }, delay);
+                delay += CONFIG.start_delay;
+            }
+        }
+
+        /**
+         * 清除所有提示窗口并重置界面
+         */
+        function clearAllTips() {
+            // 批量移除所有提示窗口
+            tipElements.forEach(element => {
+                if (element.parentNode) {
+                    element.style.opacity = 0;
+                    setTimeout(() => {
+                        if (element.parentNode) {
+                            document.body.removeChild(element);
+                        }
+                    }, 300);
+                }
+            });
+            tipElements = []; // 清空数组
+
+            // 重置状态
+            allTipsCreated = false;
+            clearBtn.style.display = 'none'; // 隐藏清除按钮
+            startBtn.disabled = false; // 启用启动按钮
+            startBtnContainer.style.opacity = 1; // 显示启动按钮容器（居中）
+        }
+    </script>
+</body>
+</html>

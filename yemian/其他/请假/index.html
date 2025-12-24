@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>请假申请</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        header {
+            padding: 10px;
+            background-color: rgb(33 150 243 / 1);
+            color: white;
+            margin-bottom: 20px;
+            box-shadow: 4px 4px 14px #ccc;
+        }
+
+        .home {
+            color: white;
+            cursor: pointer;
+            padding: 0 10px;
+        }
+        
+        .container {
+            min-width: 95vw;
+            background-color: white;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px 40px;
+            gap: 30px;
+        }
+
+        .page {
+            flex: 1;
+            min-width: 300px;
+            margin-bottom: 20px;
+        }
+        
+        .page iframe {
+            width: 100%;
+            min-height: 400px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .page .info {
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .new-page-btn {
+            display: flex;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .new-page-btn span {
+            display: flex;
+            align-items: center;
+            background: #f3f3f3;
+            padding: 10px 15px;
+            color: #222;
+            font-weight: bold;
+        }
+
+        .new-page-btn a {
+            display: flex;
+            align-items: center;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 16px;
+            background-color: rgb(33 150 243 / 1);
+            border-radius: 0 8px 8px 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .new-page-btn a:hover {
+            background-color: rgb(33 150 243 / 80%);
+        }
+
+        li {
+            list-style: decimal;
+            margin-left: 18px;
+            margin-bottom: 8px;
+        }
+
+        .introduction {
+            line-height: 1.7;
+            font-size: 15px;
+            letter-spacing: 0.8px;
+        }
+
+        .text-stress {
+            color: red;
+            font-weight: bold;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                min-width: 98vw;
+                margin: 10px;
+            }
+            
+            .content {
+                padding: 15px;
+                gap: 20px;
+            }
+            
+            .page {
+                min-width: 100%;
+            }
+            
+            .page iframe {
+                min-height: 350px;
+            }
+            
+            .new-page-btn span {
+                font-size: 14px;
+                padding: 8px 12px;
+            }
+            
+            .new-page-btn a {
+                font-size: 14px;
+                padding: 8px 15px;
+            }
+            
+            .introduction {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page iframe {
+                min-height: 300px;
+            }
+            
+            .introduction {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header><a class="home" href="../">首页</a></header>
+        <div class="content">
+            <div class="page">
+                <iframe src="ym/yemian1.html"></iframe>
+                <div class="info">  
+                    <div class="new-page-btn">
+                        <span>版本一：手机用这个</span>
+                        <a href="ym/yemian1.html" target="_blank">新页面打开</a>
+                    </div>
+                    <div class="introduction">
+                        这个请假申请页面实现了以下功能：
+                        <ul>
+                            <li>拒绝按钮随机移动：<span class="text-stress">每次点击"拒绝"按钮</span>时，按钮会在按钮容器内随机移动位置，增加点击难度</li>
+                            <li>拒绝次数统计：记录并显示拒绝按钮被点击的次数，并且超过9次会显示"求求了"的信息</li>
+                            <li>同意后显示感谢信息：点击"同意"按钮后，会显示绿色感谢信息和倒计时</li>
+                            <li>倒计时功能：同意后显示9秒倒计时，模拟申请确认过程</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="page">
+                <iframe src="ym/yemian2.html"></iframe>
+                <div class="info">  
+                    <div class="new-page-btn">
+                        <span>版本二：电脑用这个</span>
+                        <a href="ym/yemian2.html" target="_blank">新页面打开</a>
+                    </div>
+                    <div class="introduction">
+                        这个请假申请页面实现了以下功能：
+                        <ul>
+                            <li>拒绝按钮随机移动：<span class="text-stress">当鼠标移动到"拒绝"按钮上</span>，按钮会在按钮容器内随机移动位置，增加点击难度</li>
+                            <li>试图点击拒绝次数统计：记录并显示鼠标移动到拒绝按钮上的次数，并且超过9次会显示"求求了"的信息</li>
+                            <li>同意后显示感谢信息：点击"同意"按钮后，会显示绿色感谢信息和倒计时</li>
+                            <li>倒计时功能：同意后显示9秒倒计时，模拟申请确认过程</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载完成后确保iframe正常加载
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('请假申请展示页面已加载');
+            
+            // 为新页面打开按钮添加更好的交互体验
+            const newPageButtons = document.querySelectorAll('.new-page-btn a');
+            newPageButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    console.log('在新页面打开版本：', this.href);
+                });
+            });
+
+            // 处理iframe加载错误的情况
+            const iframes = document.querySelectorAll('iframe');
+            iframes.forEach(iframe => {
+                iframe.addEventListener('error', function() {
+                    console.error('iframe加载失败:', this.src);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

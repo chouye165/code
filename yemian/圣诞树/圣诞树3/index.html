@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>圣诞树</title>
   <style>
     body {
@@ -30,7 +30,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding-top: 40px;
+      padding-top: clamp(20px, 5vw, 40px);
       box-sizing: border-box;
     }
     .ui-hidden {
@@ -53,15 +53,15 @@
     }
     .loader-text {
       color: #faf6e9;
-      font-size: 14px;
+      font-size: clamp(12px, 3vw, 14px);
       letter-spacing: 4px;
       margin-top: 20px;
       text-transform: uppercase;
       font-weight: 100;
     }
     .spinner {
-      width: 40px;
-      height: 40px;
+      width: clamp(30px, 8vw, 40px);
+      height: clamp(30px, 8vw, 40px);
       border: 1px solid rgba(212, 175, 55, 0.2);
       border-top: 1px solid #faf6e9;
       border-radius: 50%;
@@ -73,10 +73,10 @@
     }
     h1 {
       color: #fceea7;
-      font-size: 56px;
+      font-size: clamp(28px, 8vw, 56px);
       margin: 0;
       font-weight: 400;
-      letter-spacing: 6px;
+      letter-spacing: clamp(3px, 1vw, 6px);
       text-shadow: 0 0 50px rgba(252, 238, 167, 0.6);
       background: linear-gradient(to bottom, #fff, #e3e0e0);
       -webkit-background-clip: text;
@@ -84,24 +84,27 @@
       font-family: fantasy;
       opacity: 0.9;
       transition: opacity 0.5s ease;
+      position: relative;
+      z-index: 11;
     }
     .upload-wrapper {
       position: absolute;
-      top: 40px;
-      right: 40px;
+      top: clamp(15px, 4vw, 40px);
+      right: clamp(15px, 4vw, 40px);
       pointer-events: auto;
       text-align: center;
       transition: opacity 0.5s ease;
+      z-index: 12;
     }
     .upload-btn {
       background: rgba(20, 20, 20, 0.6);
       border: 1px solid rgb(255 255 255 / 40%);
       color: #faf6e9;
-      padding: 10px 25px;
+      padding: clamp(8px, 2vw, 10px) clamp(15px, 4vw, 25px);
       cursor: pointer;
       text-transform: uppercase;
       letter-spacing: 3px;
-      font-size: 10px;
+      font-size: clamp(8px, 2vw, 10px);
       transition: all 0.4s;
       display: inline-block;
       backdrop-filter: blur(5px);
@@ -113,7 +116,7 @@
     }
     .hint-text {
       color: rgb(255 255 255 / 40%);
-      font-size: 9px;
+      font-size: clamp(7px, 1.8vw, 9px);
       margin-top: 8px;
       letter-spacing: 1px;
       text-transform: uppercase;
@@ -123,24 +126,26 @@
     }
     #help-panel {
       position: absolute;
-      top: 20px;
-      left: 20px;
-      background: rgba(0, 0, 0, 0.8);
+      top: clamp(10px, 3vw, 20px);
+      left: clamp(10px, 3vw, 20px);
+      background: rgba(0, 0, 0, 0.95);
       border: 1px solid rgb(255 255 255 / 40%);
       border-radius: 8px;
-      padding: 20px;
-      max-width: 280px;
+      padding: clamp(12px, 3vw, 20px);
+      max-width: clamp(200px, 30vw, 280px);
       pointer-events: auto;
-      font-size: 13px;
+      font-size: clamp(11px, 2.5vw, 13px);
       line-height: 1.6;
       transition: opacity 0.5s ease;
+      z-index: 12;
+      box-shadow: 0 0 20px rgba(0,0,0,0.8);
     }
     #help-panel h3 {
       color: #faf6e9;
       margin: 0 0 15px 0;
       border-bottom: 1px solid #faf6e9;
       padding-bottom: 10px;
-      font-size: 16px;
+      font-size: clamp(14px, 3vw, 16px);
     }
     #help-panel p {
       margin: 8px 0;
@@ -165,20 +170,21 @@
     }
     #manage-photos-btn {
       position: absolute;
-      bottom: 40px;
-      left: 40px;
+      bottom: clamp(15px, 4vw, 40px);
+      left: clamp(15px, 4vw, 40px);
       background: rgba(20, 20, 20, 0.6);
       border: 1px solid rgb(255 255 255 / 40%);
       color: #faf6e9;
-      padding: 10px 25px;
+      padding: clamp(8px, 2vw, 10px) clamp(15px, 4vw, 25px);
       cursor: pointer;
       text-transform: uppercase;
       letter-spacing: 3px;
-      font-size: 10px;
+      font-size: clamp(8px, 2vw, 10px);
       transition: all 0.4s;
       display: inline-block;
       backdrop-filter: blur(5px);
       pointer-events: auto;
+      z-index: 12;
     }
     #manage-photos-btn:hover {
       background: #faf6e9;
@@ -196,32 +202,37 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       pointer-events: auto;
+      padding: clamp(20px, 5vw, 40px) clamp(10px, 3vw, 20px);
+      box-sizing: border-box;
+      overflow-y: auto;
     }
     #photo-manager.hidden {
       display: none;
     }
     #manager-header {
       color: #faf6e9;
-      font-size: 24px;
-      margin-bottom: 30px;
+      font-size: clamp(18px, 4vw, 24px);
+      margin-bottom: clamp(20px, 4vw, 30px);
       text-align: center;
       font-family: 'Cinzel', 'Times New Roman', serif;
     }
     #photo-grid {
       display: grid;
-      grid-template-columns: repeat(4, 150px);
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(clamp(100px, 40vw, 150px), 1fr));
+      gap: clamp(10px, 3vw, 20px);
       max-width: 700px;
+      width: 100%;
       max-height: 70vh;
       overflow-y: auto;
-      padding: 20px;
+      padding: clamp(10px, 3vw, 20px);
+      box-sizing: border-box;
     }
     .photo-item {
       position: relative;
-      width: 150px;
-      height: 150px;
+      width: 100%;
+      height: clamp(100px, 40vw, 150px);
       border: 2px solid #faf6e9;
       background: rgba(0, 0, 0, 0.7);
       display: flex;
@@ -253,18 +264,19 @@
       z-index: 1001;
     }
     #close-manager {
-      margin-top: 30px;
+      margin-top: clamp(20px, 4vw, 30px);
       background: rgba(20, 20, 20, 0.6);
       border: 1px solid rgb(255 255 255 / 40%);
       color: #faf6e9;
-      padding: 10px 25px;
+      padding: clamp(8px, 2vw, 10px) clamp(15px, 4vw, 25px);
       cursor: pointer;
       text-transform: uppercase;
       letter-spacing: 3px;
-      font-size: 10px;
+      font-size: clamp(8px, 2vw, 10px);
       transition: all 0.4s;
       display: inline-block;
       backdrop-filter: blur(5px);
+      margin-bottom: clamp(20px, 5vw, 40px);
     }
     #close-manager:hover {
       background: #faf6e9;
@@ -273,28 +285,88 @@
     }
     .control-buttons {
       position: absolute;
-      bottom: 40px;
-      right: 40px;
+      bottom: clamp(15px, 4vw, 40px);
+      right: clamp(15px, 4vw, 40px);
       display: flex;
-      gap: 15px;
+      gap: clamp(8px, 2vw, 15px);
       pointer-events: auto;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      z-index: 12;
     }
     .control-btn {
       background: rgba(20, 20, 20, 0.6);
       border: 1px solid rgb(255 255 255 / 40%);
       color: #faf6e9;
-      padding: 10px 20px;
+      padding: clamp(8px, 2vw, 10px) clamp(12px, 3vw, 20px);
       cursor: pointer;
       text-transform: uppercase;
       letter-spacing: 2px;
-      font-size: 10px;
+      font-size: clamp(8px, 2vw, 10px);
       transition: all 0.4s;
       backdrop-filter: blur(5px);
+      white-space: nowrap;
     }
     .control-btn:hover {
       background: #faf6e9;
       color: #000;
       box-shadow: 0 0 20px rgb(255 255 255 / 40%);
+    }
+
+    /* 移动端特殊适配 */
+    @media (max-width: 768px) {
+      #help-panel {
+        max-width: clamp(180px, 40vw, 250px);
+        top: auto;
+        bottom: 120px;
+        left: clamp(15px, 4vw, 20px);
+        transition: opacity 0.5s ease;
+      }
+      .control-buttons {
+        gap: 10px;
+        bottom: 20px;
+        right: clamp(15px, 4vw, 20px);
+      }
+      #manage-photos-btn {
+        bottom: 80px;
+        left: clamp(15px, 4vw, 20px);
+        transform: none;
+        width: auto;
+      }
+      #photo-grid {
+        max-height: 60vh;
+      }
+      .upload-wrapper {
+        top: clamp(15px, 4vw, 40px);
+        right: clamp(15px, 4vw, 40px);
+        bottom: auto;
+      }
+    }
+
+    @media (max-width: 480px) {
+      #help-panel {
+        max-width: 70vw;
+        font-size: 11px;
+        padding: 12px;
+        bottom: 150px;
+      }
+      .control-buttons {
+        flex-direction: column;
+        gap: 8px;
+        bottom: 20px;
+        right: 15px;
+      }
+      .control-btn {
+        width: 100%;
+        text-align: center;
+      }
+      #photo-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      #manage-photos-btn {
+        bottom: 120px;
+      }
     }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
@@ -323,11 +395,11 @@
       <p><code>F</code> 键 / 点击按钮：照片聚焦</p>
       <p><code>H</code> 键：隐藏UI</p>
       <p>
-	   圣诞快乐！<code>💖</code> 
-	  <img src="https://tc.666688.dpdns.org/api/cfile/AgACAgUAAyEGAATbbe0rAAMFaUgQ2arOzDbxF2ebF4j78Mf_jJIAAhoOaxvOdEBWPatonyy-y1gBAAMCAAN4AAM2BA" alt="1.jpg" style="width: 50px; height: 50px; border-radius: 50%; vertical-align: middle; margin-right: 8px;" ><b>小瘦金</b>
-  </p>
+        圣诞快乐！<code>💖</code> 
+        <img src="https://tc.666688.dpdns.org/api/cfile/AgACAgUAAyEGAATbbe0rAAMFaUgQ2arOzDbxF2ebF4j78Mf_jJIAAhoOaxvOdEBWPatonyy-y1gBAAMCAAN4AAM2BA" alt="1.jpg" style="width: clamp(30px, 10vw, 50px); height: clamp(30px, 10vw, 50px); border-radius: 50%; vertical-align: middle; margin-right: 8px;" ><b>小瘦金</b>
+      </p>
       <hr />
-      <p style="font-size: 11px; color: #999; margin-top: 12px">
+      <p style="font-size: clamp(9px, 2vw, 11px); color: #999; margin-top: 12px">
         💡 支持上传自定义照片
       </p>
     </div>
@@ -670,7 +742,6 @@
       })
 
       const candyMat = new THREE.MeshStandardMaterial({
-	  
         map: caneTexture,
         roughness: 0.4,
       })
@@ -763,8 +834,8 @@
     function addPhotoToScene(texture) {
       const frameGeo = new THREE.BoxGeometry(1.4, 1.4, 0.05)
       const frameMat = new THREE.MeshStandardMaterial({
-	  color: 0xfffafa,
-	  emissive: 0x000000,
+        color: 0xfffafa,
+        emissive: 0x000000,
         metalness: 1,
         roughness: 1,
       })
@@ -856,6 +927,17 @@
             break
         }
       })
+
+      // 手机端：控制说明面板3秒后自动隐藏（仅隐藏，无重新显示逻辑）
+      const isMobile = window.innerWidth <= 768; // 判断移动端
+      const helpPanel = document.getElementById('help-panel');
+      if (isMobile) {
+        // 3秒后自动隐藏，且不再重新显示
+        setTimeout(() => {
+          helpPanel.style.opacity = '0';
+          helpPanel.style.pointerEvents = 'none'; // 隐藏后禁止点击
+        }, 3000);
+      }
     }
 
     function showPhotoManager() {

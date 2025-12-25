@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>小猫游戏</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -43,9 +43,18 @@
             height: 40px;
             cursor: grab;
             user-select: none;
+            touch-action: none; /* 禁用浏览器默认触摸行为 */
+            position: relative;
+            z-index: 5;
         }
         .scallop:active {
             cursor: grabbing;
+        }
+        /* 拖拽中的扇贝样式 */
+        .scallop-dragging {
+            opacity: 0.8;
+            transform: scale(1.1);
+            z-index: 20 !important;
         }
         .buttons {
             position: absolute;
@@ -61,6 +70,7 @@
             background-color: #f0f0f0;
             cursor: pointer;
             transition: all 0.2s ease;
+            touch-action: manipulation; /* 优化按钮触摸响应 */
         }
         .btn:hover {
             background-color: #e0e0e0;
@@ -73,7 +83,7 @@
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
     <div class="bg-white p-8 rounded-lg shadow-lg">
         <h1 class="text-2xl font-bold text-center mb-6">小猫</h1>
-        <div class="game-container">
+        <div class="game-container" id="gameContainer">
             <!-- 小猫图标 -->
             <div id="cat" class="cat">
                 <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/fda1501e2cbf4b9fa8b0021433f9e224~tplv-a9rns2rl98-image.image?rcl=20251221135108DA54EBC0BEAFFDAB9AC1&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1766901069&amp;x-signature=yBkO6sQZhRjcnrLGr7%2FntDl3dQ8%3D" alt="小猫" width="50">
@@ -89,19 +99,19 @@
             
             <!-- 扇贝图标 -->
             <div class="scallops" id="scallopsContainer">
-                <div class="scallop" draggable="true" data-id="1">
+                <div class="scallop" data-id="1">
                     <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/4cade4ada30d48a694d121aba85ebcde~tplv-a9rns2rl98-image.image?rcl=20251221140909FE152E075A729BAA0141&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1766902150&amp;x-signature=45Eic9UfFdBONvFOyoXQVZ8S6ec%3D" alt="扇贝" width="40">
                 </div>
-                <div class="scallop" draggable="true" data-id="2">
+                <div class="scallop" data-id="2">
                     <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/4cade4ada30d48a694d121aba85ebcde~tplv-a9rns2rl98-image.image?rcl=20251221140909FE152E075A729BAA0141&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1766902150&amp;x-signature=45Eic9UfFdBONvFOyoXQVZ8S6ec%3D" alt="扇贝" width="40">
                 </div>
-                <div class="scallop" draggable="true" data-id="3">
+                <div class="scallop" data-id="3">
                     <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/4cade4ada30d48a694d121aba85ebcde~tplv-a9rns2rl98-image.image?rcl=20251221140909FE152E075A729BAA0141&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1766902150&amp;x-signature=45Eic9UfFdBONvFOyoXQVZ8S6ec%3D" alt="扇贝" width="40">
                 </div>
-                <div class="scallop" draggable="true" data-id="4">
+                <div class="scallop" data-id="4">
                     <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/4cade4ada30d48a694d121aba85ebcde~tplv-a9rns2rl98-image.image?rcl=20251221140909FE152E075A729BAA0141&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1766902150&amp;x-signature=45Eic9UfFdBONvFOyoXQVZ8S6ec%3D" alt="扇贝" width="40">
                 </div>
-                <div class="scallop" draggable="true" data-id="5">
+                <div class="scallop" data-id="5">
                     <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/4cade4ada30d48a694d121aba85ebcde~tplv-a9rns2rl98-image.image?rcl=20251221140909FE152E075A729BAA0141&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1766902150&amp;x-signature=45Eic9UfFdBONvFOyoXQVZ8S6ec%3D" alt="扇贝" width="40">
                 </div>
             </div>
@@ -114,7 +124,7 @@
         </div>
     </div>
 
-    <!-- 音频元素 -->
+    <!-- 音频元素（示例音频，实际替换为你的音频） -->
     <audio id="audio1" src="mu/1.MP3" preload="auto"></audio>
     <audio id="audio2" src="mu/2.MP3" preload="auto"></audio>
     <audio id="audio3" src="mu/3.mp3" preload="auto"></audio>
@@ -127,6 +137,7 @@
         const watchBtn = document.getElementById('watchBtn');
         const mickeyBtn = document.getElementById('mickeyBtn');
         const scallopsContainer = document.getElementById('scallopsContainer');
+        const gameContainer = document.getElementById('gameContainer');
         const audio1 = document.getElementById('audio1');
         const audio2 = document.getElementById('audio2');
         const audio3 = document.getElementById('audio3');
@@ -136,16 +147,102 @@
         let isCorrect = false;
         let originalCatPosition = { top: '50px', left: '125px' };
         
-        // 初始化拖拽事件
+        // 拖拽状态（移动端）
+        let draggingScallop = null;
+        let startX = 0;
+        let startY = 0;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        // 检测是否为移动端
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        // 初始化拖拽（兼容PC和移动端）
         function initDragAndDrop() {
             const scallops = document.querySelectorAll('.scallop');
             
             scallops.forEach(scallop => {
+                // PC端拖拽逻辑（保留原有）
+                scallop.setAttribute('draggable', 'true');
                 scallop.addEventListener('dragstart', (e) => {
                     e.dataTransfer.setData('text/plain', scallop.dataset.id);
+                    scallop.classList.add('scallop-dragging');
                 });
+                
+                scallop.addEventListener('dragend', () => {
+                    scallop.classList.remove('scallop-dragging');
+                });
+
+                // 移动端触摸拖拽逻辑
+                if (isMobile) {
+                    // 触摸开始
+                    scallop.addEventListener('touchstart', (e) => {
+                        e.preventDefault(); // 阻止默认滚动等行为
+                        draggingScallop = scallop;
+                        
+                        // 获取触摸起始位置
+                        const touch = e.touches[0];
+                        startX = touch.clientX;
+                        startY = touch.clientY;
+                        
+                        // 获取扇贝元素的初始位置
+                        const rect = scallop.getBoundingClientRect();
+                        offsetX = touch.clientX - rect.left;
+                        offsetY = touch.clientY - rect.top;
+                        
+                        // 设置扇贝为绝对定位（方便拖拽）
+                        scallop.style.position = 'absolute';
+                        scallop.style.zIndex = '20';
+                        scallop.classList.add('scallop-dragging');
+                        
+                        // 记录初始位置（用于还原）
+                        scallop.dataset.originalLeft = rect.left - gameContainer.getBoundingClientRect().left + 'px';
+                        scallop.dataset.originalTop = rect.top - gameContainer.getBoundingClientRect().top + 'px';
+                    });
+
+                    // 触摸移动
+                    document.addEventListener('touchmove', (e) => {
+                        if (!draggingScallop) return;
+                        e.preventDefault();
+                        
+                        const touch = e.touches[0];
+                        // 计算新位置（相对于游戏容器）
+                        const containerRect = gameContainer.getBoundingClientRect();
+                        const newLeft = touch.clientX - offsetX - containerRect.left;
+                        const newTop = touch.clientY - offsetY - containerRect.top;
+                        
+                        // 更新扇贝位置
+                        draggingScallop.style.left = newLeft + 'px';
+                        draggingScallop.style.top = newTop + 'px';
+                    });
+
+                    // 触摸结束
+                    document.addEventListener('touchend', (e) => {
+                        if (!draggingScallop) return;
+                        
+                        // 检查是否拖到小猫位置
+                        const catRect = cat.getBoundingClientRect();
+                        const scallopRect = draggingScallop.getBoundingClientRect();
+                        
+                        // 判断是否重叠（碰撞检测）
+                        if (isOverlap(catRect, scallopRect)) {
+                            // 拖到小猫身上，执行喂食逻辑
+                            handleScallopDrop(draggingScallop.dataset.id);
+                        } else {
+                            // 未拖到小猫，还原位置
+                            draggingScallop.style.position = '';
+                            draggingScallop.style.left = draggingScallop.dataset.originalLeft;
+                            draggingScallop.style.top = draggingScallop.dataset.originalTop;
+                        }
+                        
+                        // 重置拖拽状态
+                        draggingScallop.classList.remove('scallop-dragging');
+                        draggingScallop = null;
+                    });
+                }
             });
             
+            // 小猫的drop事件（PC端）
             cat.addEventListener('dragover', (e) => {
                 e.preventDefault();
             });
@@ -153,29 +250,46 @@
             cat.addEventListener('drop', (e) => {
                 e.preventDefault();
                 const scallopId = e.dataTransfer.getData('text/plain');
-                const scallop = document.querySelector(`.scallop[data-id="${scallopId}"]`);
-                
-                if (scallop) {
-                    // 播放音频2
-                    audio2.play();
-                    
-                    // 移除扇贝
-                    scallop.remove();
-                    
-                    // 检查是否所有扇贝都被移除
-                    if (document.querySelectorAll('.scallop').length === 0) {
-                        // 重新开始游戏
-                        resetGame();
-                    } else if (currentTarget) {
-                        // 如果是通过按钮移动后喂食，小猫回到原位置
-                        setTimeout(() => {
-                            cat.style.top = originalCatPosition.top;
-                            cat.style.left = originalCatPosition.left;
-                            currentTarget = null;
-                        }, 500);
-                    }
-                }
+                handleScallopDrop(scallopId);
             });
+        }
+
+        // 碰撞检测：判断两个矩形是否重叠
+        function isOverlap(rect1, rect2) {
+            return !(
+                rect1.right < rect2.left ||
+                rect1.left > rect2.right ||
+                rect1.bottom < rect2.top ||
+                rect1.top > rect2.bottom
+            );
+        }
+
+        // 处理扇贝拖放到小猫身上的逻辑（统一PC和移动端）
+        function handleScallopDrop(scallopId) {
+            const scallop = document.querySelector(`.scallop[data-id="${scallopId}"]`);
+            if (!scallop) return;
+            
+            // 播放音频2
+            try {
+                audio2.play();
+            } catch (e) {
+                console.log('音频播放失败:', e);
+            }
+            
+            // 移除扇贝
+            scallop.remove();
+            
+            // 检查是否所有扇贝都被移除
+            if (document.querySelectorAll('.scallop').length === 0) {
+                resetGame();
+            } else if (currentTarget) {
+                // 如果是通过按钮移动后喂食，小猫回到原位置
+                setTimeout(() => {
+                    cat.style.top = originalCatPosition.top;
+                    cat.style.left = originalCatPosition.left;
+                    currentTarget = null;
+                }, 500);
+            }
         }
         
         // 移动小猫到目标位置
@@ -195,7 +309,7 @@
             currentTarget = target;
             
             // 75%-90%随机概率正确
-            const correctProbability = 0.75 + Math.random() * 0.15; // 生成0.75到0.9之间的随机数
+            const correctProbability = 0.75 + Math.random() * 0.15;
             isCorrect = Math.random() < correctProbability ? correctTarget === target : correctTarget !== target;
             
             // 如果错误，小猫直接回到原位置
@@ -217,7 +331,6 @@
             for (let i = 1; i <= 5; i++) {
                 const scallopDiv = document.createElement('div');
                 scallopDiv.className = 'scallop';
-                scallopDiv.draggable = true;
                 scallopDiv.dataset.id = i;
                 scallopDiv.innerHTML = `<img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/4cade4ada30d48a694d121aba85ebcde~tplv-a9rns2rl98-image.image?rcl=20251221140909FE152E075A729BAA0141&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1766902150&amp;x-signature=45Eic9UfFdBONvFOyoXQVZ8S6ec%3D" alt="扇贝" width="40">`;
                 scallopsContainer.appendChild(scallopDiv);
@@ -234,20 +347,22 @@
         
         // 绑定按钮事件
         watchBtn.addEventListener('click', () => {
-            // 播放音频3
-            audio3.play();
-            
-            // 移动小猫到手表或米老鼠位置（75%-90%随机概率到手表）
-            const watchProbability = 0.75 + Math.random() * 0.15; // 生成0.75到0.9之间的随机数
+            try {
+                audio3.play();
+            } catch (e) {
+                console.log('音频播放失败:', e);
+            }
+            const watchProbability = 0.75 + Math.random() * 0.15;
             moveCatToTarget(Math.random() < watchProbability ? watchTarget : mickeyTarget, watchTarget);
         });
         
         mickeyBtn.addEventListener('click', () => {
-            // 播放音频1
-            audio1.play();
-            
-            // 移动小猫到米老鼠或手表位置（75%-90%随机概率到米老鼠）
-            const mickeyProbability = 0.75 + Math.random() * 0.15; // 生成0.75到0.9之间的随机数
+            try {
+                audio1.play();
+            } catch (e) {
+                console.log('音频播放失败:', e);
+            }
+            const mickeyProbability = 0.75 + Math.random() * 0.15;
             moveCatToTarget(Math.random() < mickeyProbability ? mickeyTarget : watchTarget, mickeyTarget);
         });
         
